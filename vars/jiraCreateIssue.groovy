@@ -1,7 +1,7 @@
 #!/usr/bin/groovy
 import org.integr8ly.JiraUtils
 
-def call(String jiraCredentials, String, url, String query, String body) {
+def call(String jiraCredentials, String, url, String query, Stirng body = null) {
   def jiraUtils = new JiraUtils()
 
   def (found, key) = jiraUtils.jiraHasIssue(jiraCredentials, url, query)
