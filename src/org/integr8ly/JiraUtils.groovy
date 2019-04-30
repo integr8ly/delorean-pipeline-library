@@ -47,6 +47,7 @@ void jiraCreateIssue(String jiraCredentials, String url, String body) {
  */
 def jiraHasIssue(String jiraCredentials, String url, String query) {
   url = "${url}/search"
+
   def body = """{
       "jql": "${query}"
   }"""

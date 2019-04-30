@@ -14,7 +14,7 @@ void gitMerge(String targetBranch, String baseBranch, errOnFailedMerge = false) 
     sh "git pull --no-edit origin ${targetBranch}"
   } catch (Exception e) {
     def errMsg = "We were unable to merge the branch '${targetBranch}' into the branch '${baseBranch}'"
-    if (failOnMerge) {
+    if (errOnFailedMerge) {
       error "${errMsg}"
     } else {
       println "${errMsg}"
