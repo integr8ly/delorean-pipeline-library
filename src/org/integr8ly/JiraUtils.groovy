@@ -3,7 +3,7 @@ package org.integr8ly
 
 /**
  * Requires the http_request plugin to be installed (https://plugins.jenkins.io/http_request)
- * @param endpoint - Jira endpoint to send the request to
+ * @param url - Jira rest api url
  * @param httpMethod - HTTP method to be used for the request
  * @param requestBody - HTTP request body
  * @param jiraCredentials - Jira credentials to be used for authentication
@@ -11,9 +11,7 @@ package org.integr8ly
  * @param validResponseCodes - Valid HTTP response codes
  * @returns HTTP response
  */
-def jiraApiRequest(String endpoint, String httpMethod = 'GET', String requestBody = null, String jiraCredentials, customHeaders = [], validResponseCodes = '100:399') {
-  def url = "https://issues.jboss.org/rest/api/2/${endpoint}"
-
+def jiraApiRequest(String url, String httpMethod = 'GET', String requestBody = null, String jiraCredentials, customHeaders = [], validResponseCodes = '100:399') {
   def response = httpRequest authentication: jiraCredentials, 
                              consoleLogResponseBody: true, 
                              contentType: 'APPLICATION_JSON',
@@ -30,58 +28,31 @@ def jiraApiRequest(String endpoint, String httpMethod = 'GET', String requestBod
 
 /**
  * @param jiraCredentials - Jira credentials to be used for authentication
- * @param gitPrUrl - The git pr url to be linked to the issue
- * @param labels - The list of labels to be added to the issue
- * @param summary - The summary of the issue
- * @returns void
+ * @param url - Jira rest api url
+ * @param body - Contains the details of the jira issue to be created
+ * @returns the id of the created jira issue
  */
-void jiraCreateIssue(String jiraCredentials, String gitPrUrl, String[] labels, String summary) {
-  def body = """{
-      "fields": {
-          "project": {
-              "id": "12321620",
-              "key": "INTLY",
-              "name": "Integreatly"
-          },
-          "summary": "${summary}",
-          "description": "${gitPrUrl}",
-          "labels": ${labels},
-          "issuetype": {
-              "name": "Task"
-          },
-          "priority": {
-              "id": "3",
-              "name": "Major"
-          },
-          "customfield_12310220": "${gitPrUrl}"
-      }
-  }"""
-
-  def endpoint = 'issue'
-  def response = jiraApiRequest(endpoint, 'POST', body, jiraCredentials, [], '201')
+void jiraCreateIssue(String jiraCredentials, String url, String body) {
+  url = "${url}/issue"
+  def response = jiraApiRequest(url, 'POST', body, jiraCredentials, [], '201')
   def data = readJSON text: response.content
-  println "[INFO] Issue created: https://issues.jboss.org/browse/${data.key}"
+  return data.key
 }
 
 /**
  * @param credentials - The jira credentials to be used for authentication
- * @param labels - List of labels used to find the jira issue
+ * @param url - Jira rest api url
+ * @param query - JQL query used to find the jira issue
  * @returns [boolean, string] Returns true and the id of the jira issue if found
  */
-def jiraHasIssue(String jiraCredentials, String[] labels) {
-  String query = "project = INTLY AND status = Open"
-
-  for (i = 0; i < labels.size(); i++) {
-    def label = labels[i].replaceAll('"', "'")
-    query = "${query} AND labels=${label}"
-  }
+def jiraHasIssue(String jiraCredentials, String url, String query) {
+  url = "${url}/search"
 
   def body = """{
       "jql": "${query}"
   }"""
 
-  def endpoint = 'search'
-  def response = jiraApiRequest(endpoint, 'POST', body, jiraCredentials, [], '200')
+  def response = jiraApiRequest(url, 'POST', body, jiraCredentials, [], '200')
 
   def data = readJSON text: response.content
 

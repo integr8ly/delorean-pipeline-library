@@ -1,5 +1,5 @@
 #!/usr/bin/groovy
-import org.integr8ly.Utils
+import org.integr8ly.GitUtils
 
 /**
  * @param gitBranch - The name of the branch to push
@@ -7,11 +7,11 @@ import org.integr8ly.Utils
  * @returns void
  */
 def call(String gitBranch, forcePush = false) {
-  def util = new Utils()
+  def gitUtil = new GitUtils()
 
   if (params.dryRun) {
     println "Would push '${gitBranch}' to remote branch. Force push enabled: ${forcePush}"
   } else {
-    util.gitPush(gitBranch, forcePush)
+    gitUtil.gitPush(gitBranch, forcePush)
   }
 }
