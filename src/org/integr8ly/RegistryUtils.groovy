@@ -29,8 +29,7 @@ def isValidAccessToken(String host, String token) {
     def headers = [
         'Authorization': "Bearer ${token}"
     ]
-    def response = httpRequest
-        consoleLogResponseBody: true,
+    def response = httpRequest consoleLogResponseBody: true,
         customHeaders: headers,
         contentType: 'APPLICATION_JSON',
         quiet: true,
@@ -49,8 +48,7 @@ def getTags(String host, String token, String image) {
     def headers = [
         'Authorization': "Bearer ${token}"
     ]
-    def response = httpRequest
-        consoleLogResponseBody: true,
+    def response = httpRequest consoleLogResponseBody: true,
         customHeaders: headers,
         contentType: 'APPLICATION_JSON',
         quiet: true,

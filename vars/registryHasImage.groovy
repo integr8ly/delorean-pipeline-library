@@ -5,7 +5,7 @@ def call(String credentials, String host, String image, String tag) {
   def utils = new RegistryUtils()
   def token = utils.getAccessToken(credentials)
 
-  if (!utils.isValidAccessToken(token)) {
+  if (!utils.isValidAccessToken(host, token)) {
     error '[ERROR] Registry authentication failed'
   }
 
