@@ -1,13 +1,34 @@
 #!/usr/bin/groovy
 import org.integr8ly.RegistryUtils
 
-def call(String credentials, String host, String image, String tag) {
+/**
+ * @param config {
+ *     credentials = secret name to use in request authentication (username + password)
+ *     host = container registry host
+ *     image = image full name to retrieve info from, should not contain image tags
+ *     tag = image tag to check
+ * }
+ * @return booleam
+ */
+def call(config) {
   def utils = new RegistryUtils()
-  def token = utils.getAccessToken(credentials)
 
-  if (!utils.isValidAccessToken(host, token)) {
+  def token = utils.getAccessToken([
+        credentials: config.credentials
+    ])
+  def isValiToken = utils.isValidAccessToken([
+        host: config.host,
+        token: token
+    ])
+
+  if (!isValiToken) {
     error '[ERROR] Registry authentication failed'
   }
 
-  return utils.tagExists(host, token, image, tag)
+  return utils.tagExists([
+        host: config.host,
+        token: token,
+        image: config.image,
+        tag: config.tag
+    ])
 }
