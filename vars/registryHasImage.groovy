@@ -9,5 +9,5 @@ def call(String credentials, String host, String image, String tag) {
     error '[ERROR] Registry authentication failed'
   }
 
-  return utils.hasTag(host, token, image, tag)
+  return utils.tagExists(host, token, image, tag)
 }

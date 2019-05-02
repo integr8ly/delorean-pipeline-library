@@ -27,7 +27,7 @@ def getAccessToken(String credentials) {
 def isValidAccessToken(String host, String token) {
     def url = "${host}/v2"
     def headers = [
-        'Authorization': "Bearer ${token}"
+        [name: 'Authorization', value: "Bearer ${token}"]
     ]
     def response = httpRequest consoleLogResponseBody: true,
         customHeaders: headers,
@@ -46,7 +46,7 @@ def isValidAccessToken(String host, String token) {
 def getTags(String host, String token, String image) {
     def url = "${host}/v2/${image}/tags/list"
     def headers = [
-        'Authorization': "Bearer ${token}"
+        [name: 'Authorization', value: "Bearer ${token}"]
     ]
     def response = httpRequest consoleLogResponseBody: true,
         customHeaders: headers,
