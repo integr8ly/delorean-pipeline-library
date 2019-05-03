@@ -157,3 +157,58 @@ static String ghTransformUrl(String url, type = 'https', webAccess = false) {
     return transformedUrl
 }
 
+/**
+ * @param org - Name of the github organization where the repository is located
+ * @param repoName - Name of the github repository
+ * @param apiTokenID - Jenkins credentials ID where the github api token is stored
+ * @param filterByTagRef - Reference used to filter the repository tags
+ * @returns a string containing the product's latest release version
+ */
+def ghGetRepoTags(String org, String repoName, String apiTokenID, String filterByTagRef = "") {
+  def endpoint = "repos/${org}/${repoName}/git/refs/tags"
+  def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
+
+  def tags = readJSON text: response.content
+  tags = tags.findAll { tag -> tag.ref.contains(filterByTagRef) }
+  return tags
+}
+
+
+/**
+ * @param org - Name of the github organization where the repository is located
+ * @param repoName - Name of the github repository
+ * @param apiTokenID - Jenkins credentials ID where the github api token is stored
+ * @param filterByTagRef - Reference used to filter the repository tags
+ * @returns a string containing the product's latest release version
+ */
+String ghGetLatestReleaseByTag(String org, String repoName, String apiTokenID, String filterByTagRef = "") {
+  def latestRelease = ""
+  def tags = ghGetRepoTags(org, repoName, apiTokenID, filterByTagRef)
+
+  if (tags) {
+    latestRelease = tags.last().ref
+    latestRelease = latestRelease.minus("refs/tags/")
+  }
+
+  return latestRelease
+}
+
+/**
+ * @param org - Name of the github organization where the repository is located
+ * @param repoName - Name of the github repository
+ * @param apiTokenID - Jenkins credentials ID where the github api token is stored
+ * @returns a string containing the product's latest release version
+ */
+String ghGetLatestReleaseByRelease(String org, String repoName, String apiTokenID) {
+  def latestRelease = ""
+  def endpoint = "repos/${org}/${repoName}/releases/latest"
+  def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
+
+  def release = readJSON text: response.content
+
+  if (release) {
+    latestRelease = release.tag_name
+  }
+
+  return latestRelease
+}
