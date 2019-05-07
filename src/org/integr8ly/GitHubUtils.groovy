@@ -23,18 +23,18 @@ import org.kohsuke.github.PagedIterable
  * @returns HTTP response
  */
 def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody = null, String ghApiTokenID, customHeaders = [], validResponseCodes = '100:399') {
-  def url = "https://api.github.com/${endpoint}"
-  withCredentials([string(credentialsId: ghApiTokenID, variable: 'gitToken')]) {
-    customHeaders.plus(["name": "Authorization", "value": "token ${env.gitToken}"])
-  }
+    def url = "https://api.github.com/${endpoint}"
+    withCredentials([string(credentialsId: ghApiTokenID, variable: 'gitToken')]) {
+        customHeaders.plus(["name": "Authorization", "value": "token ${env.gitToken}"])
+    }
 
-  def response = httpRequest httpMode: httpMethod,
-                             contentType: 'APPLICATION_JSON',
-                             requestBody: requestBody,
-                             customHeaders: customHeaders,
-                             url: url,
-                             validResponseCodes: validResponseCodes
-  return response
+    def response = httpRequest httpMode: httpMethod,
+                                contentType: 'APPLICATION_JSON',
+                                requestBody: requestBody,
+                                customHeaders: customHeaders,
+                                url: url,
+                                validResponseCodes: validResponseCodes
+    return response
 }
 
 /**
@@ -48,17 +48,17 @@ def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody 
  */
 @NonCPS
 GHPullRequest ghFindOrCreatePullRequest(GHRepository repo, String head, String base, String title, String body, String[] labels) {
-  GHPullRequest pr = ghGetPullRequest(repo, head, base, GHIssueState.OPEN)
-  if (pr) {
-      println "Found already open PR on ${repo.getName()} head:${head} base:${base} - ${pr.getHtmlUrl()}"
-  } else {
-      //head for the query above requires the user e.g. integr8ly:branch_name, but here we only want branch_name see https://developer.github.com/v3/pulls/#list-pull-requests
-      head = head.split(':').last()
-      pr = repo.createPullRequest(title, head, base, body)
-      pr.setLabels(labels)
-      println "Opened new PR on ${repo.getName()} head:${head} base:${base} - ${pr.getHtmlUrl()}"
-  }
-  return pr
+    GHPullRequest pr = ghGetPullRequest(repo, head, base, GHIssueState.OPEN)
+    if (pr) {
+        println "Found already open PR on ${repo.getName()} head:${head} base:${base} - ${pr.getHtmlUrl()}"
+    } else {
+        //head for the query above requires the user e.g. integr8ly:branch_name, but here we only want branch_name see https://developer.github.com/v3/pulls/#list-pull-requests
+        head = head.split(':').last()
+        pr = repo.createPullRequest(title, head, base, body)
+        pr.setLabels(labels)
+        println "Opened new PR on ${repo.getName()} head:${head} base:${base} - ${pr.getHtmlUrl()}"
+    }
+    return pr
 }
 
 /**
@@ -70,12 +70,12 @@ GHPullRequest ghFindOrCreatePullRequest(GHRepository repo, String head, String b
  */
 @NonCPS
 GHPullRequest ghGetPullRequest(GHRepository repo, String head, String base, GHIssueState state) {
-  PagedIterable<GHPullRequest> pullRequests = repo.queryPullRequests()
-        .head(head)
-        .base(base)
-        .state(state)
-        .list()
-  return pullRequests[0]
+    PagedIterable<GHPullRequest> pullRequests = repo.queryPullRequests()
+            .head(head)
+            .base(base)
+            .state(state)
+            .list()
+    return pullRequests[0]
 }
 
 
@@ -86,13 +86,13 @@ GHPullRequest ghGetPullRequest(GHRepository repo, String head, String base, GHIs
  */
 @NonCPS
 GHPullRequest ghGetPullRequestFromUrl(GitHub gitHub, String prUrl) {
-  URL url = new URL(prUrl)
-  String[] pathSegments = url.path.trim().split('/') - '' - 'pull'
-  String ghOwner = pathSegments[0]
-  String ghRepo = pathSegments[1]
-  String ghPrNumber = pathSegments[2]
-  GHRepository repo = gitHub.getRepository("${ghOwner}/${ghRepo}")
-  return repo.getPullRequest(ghPrNumber as int)
+    URL url = new URL(prUrl)
+    String[] pathSegments = url.path.trim().split('/') - '' - 'pull'
+    String ghOwner = pathSegments[0]
+    String ghRepo = pathSegments[1]
+    String ghPrNumber = pathSegments[2]
+    GHRepository repo = gitHub.getRepository("${ghOwner}/${ghRepo}")
+    return repo.getPullRequest(ghPrNumber as int)
 }
 
 /**
@@ -102,13 +102,13 @@ GHPullRequest ghGetPullRequestFromUrl(GitHub gitHub, String prUrl) {
  */
 @NonCPS
 boolean ghPrHasLabel(GHPullRequest pr, String labelName) {
-  boolean hasLabel = false
-  for (GHLabel label : pr.getLabels()) {
-    if (label.getName() == labelName) {
-        hasLabel = true
+    boolean hasLabel = false
+    for (GHLabel label : pr.getLabels()) {
+        if (label.getName() == labelName) {
+            hasLabel = true
+        }
     }
-  }
-  return hasLabel
+    return hasLabel
 }
 
 /**
@@ -121,7 +121,7 @@ boolean ghPrHasLabel(GHPullRequest pr, String labelName) {
  */
 @NonCPS
 GHCommitStatus ghUpdatePrCommitStatus(GHPullRequest pr, GHCommitState state, String targetUrl, String description, String context) {
-  return pr.getRepository().createCommitStatus(pr.getHead().getSha(), state, targetUrl, description, context)
+    return pr.getRepository().createCommitStatus(pr.getHead().getSha(), state, targetUrl, description, context)
 }
 
 /**
@@ -135,7 +135,7 @@ GHCommitStatus ghUpdatePrCommitStatus(GHPullRequest pr, GHCommitState state, Str
  */
 @NonCPS
 GHCommitStatus ghUpdatePrCommitStatus(GitHub gitHub, String prUrl, GHCommitState state, String targetUrl, String description, String context) {
-  return ghUpdatePrCommitStatus(ghGetPullRequestFromUrl(gitHub, prUrl), state, targetUrl, description, context)
+    return ghUpdatePrCommitStatus(ghGetPullRequestFromUrl(gitHub, prUrl), state, targetUrl, description, context)
 }
 
 /**
@@ -165,12 +165,12 @@ static String ghTransformUrl(String url, type = 'https', webAccess = false) {
  * @returns a string containing the product's latest release version
  */
 def ghGetRepoTags(String org, String repoName, String apiTokenID, String filterByTagRef = "") {
-  def endpoint = "repos/${org}/${repoName}/git/refs/tags"
-  def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
+    def endpoint = "repos/${org}/${repoName}/git/refs/tags"
+    def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
 
-  def tags = readJSON text: response.content
-  tags = tags.findAll { tag -> tag.ref.contains(filterByTagRef) }
-  return tags
+    def tags = readJSON text: response.content
+    tags = tags.findAll { tag -> tag.ref.contains(filterByTagRef) }
+    return tags
 }
 
 
@@ -182,15 +182,14 @@ def ghGetRepoTags(String org, String repoName, String apiTokenID, String filterB
  * @returns a string containing the product's latest release version
  */
 String ghGetLatestReleaseByTag(String org, String repoName, String apiTokenID, String filterByTagRef = "") {
-  def latestRelease = ""
-  def tags = ghGetRepoTags(org, repoName, apiTokenID, filterByTagRef)
+    def latestRelease = ""
+    def tags = ghGetRepoTags(org, repoName, apiTokenID, filterByTagRef)
 
-  if (tags) {
-    latestRelease = tags.last().ref
-    latestRelease = latestRelease.minus("refs/tags/")
-  }
-
-  return latestRelease
+    if (tags) {
+        latestRelease = tags.last().ref
+        latestRelease = latestRelease.minus("refs/tags/")
+    }
+    return latestRelease
 }
 
 /**
@@ -200,15 +199,13 @@ String ghGetLatestReleaseByTag(String org, String repoName, String apiTokenID, S
  * @returns a string containing the product's latest release version
  */
 String ghGetLatestReleaseByRelease(String org, String repoName, String apiTokenID) {
-  def latestRelease = ""
-  def endpoint = "repos/${org}/${repoName}/releases/latest"
-  def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
+    def latestRelease = ""
+    def endpoint = "repos/${org}/${repoName}/releases/latest"
+    def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
 
-  def release = readJSON text: response.content
-
-  if (release) {
-    latestRelease = release.tag_name
-  }
-
-  return latestRelease
+    def release = readJSON text: response.content
+    if (release) {
+        latestRelease = release.tag_name
+    }
+    return latestRelease
 }
