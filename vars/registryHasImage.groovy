@@ -16,12 +16,12 @@ def call(config) {
   def token = utils.getAccessToken([
         credentials: config.credentials
     ])
-  def isValiToken = utils.isValidAccessToken([
+  def isValidToken = utils.isValidAccessToken([
         host: config.host,
         token: token
     ])
 
-  if (!isValiToken) {
+  if (!isValidToken) {
     error '[ERROR] Registry authentication failed'
   }
 
