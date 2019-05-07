@@ -11,21 +11,21 @@ import org.integr8ly.RegistryUtils
  * @return booleam
  */
 def call(config) {
-  def utils = new RegistryUtils()
+    def utils = new RegistryUtils()
 
-  def token = utils.getAccessToken([
+    def token = utils.getAccessToken([
         credentials: config.credentials
     ])
-  def isValidToken = utils.isValidAccessToken([
+    def isValidToken = utils.isValidAccessToken([
         host: config.host,
         token: token
     ])
 
-  if (!isValidToken) {
-    error '[ERROR] Registry authentication failed'
-  }
+    if (!isValidToken) {
+        error '[ERROR] Registry authentication failed'
+    }
 
-  return utils.tagExists([
+    return utils.tagExists([
         host: config.host,
         token: token,
         image: config.image,
