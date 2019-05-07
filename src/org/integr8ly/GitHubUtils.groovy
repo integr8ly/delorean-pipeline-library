@@ -138,3 +138,22 @@ GHCommitStatus ghUpdatePrCommitStatus(GitHub gitHub, String prUrl, GHCommitState
   return ghUpdatePrCommitStatus(ghGetPullRequestFromUrl(gitHub, prUrl), state, targetUrl, description, context)
 }
 
+/**
+ * @param url - A GitHub project URL
+ * @param type - Type of URL required (https or ssh)
+ * @param webAccess - Should the URL be web accessible
+ * @returns transformed URL.
+ */
+static String ghTransformUrl(String url, type = 'https', webAccess = false) {
+    String transformedUrl
+    if(type == 'https') {
+        transformedUrl = url.replace("git@github.com:", "https://github.com/")
+        if(webAccess) {
+            transformedUrl = transformedUrl.replace('.git', '')
+        }
+    } else {
+        transformedUrl = url.replace("https://github.com/", "git@github.com:")
+    }
+    return transformedUrl
+}
+
