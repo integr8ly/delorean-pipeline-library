@@ -56,6 +56,14 @@ class RegistryImage {
         this.tag = tag
     }
 
+    String getDockerHost() {
+        return "docker://${this.host}"
+    }
+
+    String getHttpsHost() {
+        return "https://${this.host}"
+    }
+
     String host;
     String project;
     String name;
