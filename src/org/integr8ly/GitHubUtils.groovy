@@ -30,6 +30,7 @@ def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody 
 
     def response = httpRequest httpMode: httpMethod,
                                 contentType: 'APPLICATION_JSON',
+                                consoleLogResponseBody: true, 
                                 requestBody: requestBody,
                                 customHeaders: customHeaders,
                                 url: url,
