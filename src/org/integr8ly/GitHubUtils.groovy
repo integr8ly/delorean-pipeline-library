@@ -17,18 +17,16 @@ import org.kohsuke.github.PagedIterable
  * @param endpoint - Github endpoint to send the request to (https://developer.github.com/v3/apps/available-endpoints/)
  * @param httpMethod - HTTP method to be used for the request
  * @param requestBody - HTTP request body
- * @param ghApiTokenID - The credentials id where the github api token is stored in Jenkins
+ * @param credentialsID - The credentials id where the github user/password is stored in Jenkins
  * @param customHeaders - Additional headers to be used for the request
  * @param validResponseCodes - Valid HTTP response codes
  * @returns HTTP response
  */
-def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody = null, String ghApiTokenID, customHeaders = [], validResponseCodes = '100:399') {
+def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody = null, String credentialsID, customHeaders = [], validResponseCodes = '100:399') {
     def url = "https://api.github.com/${endpoint}"
-    withCredentials([string(credentialsId: ghApiTokenID, variable: 'gitToken')]) {
-        customHeaders.plus(["name": "Authorization", "value": "token ${env.gitToken}"])
-    }
 
     def response = httpRequest httpMode: httpMethod,
+                                authentication: credentialsID,
                                 contentType: 'APPLICATION_JSON',
                                 consoleLogResponseBody: true, 
                                 requestBody: requestBody,
@@ -161,13 +159,13 @@ static String ghTransformUrl(String url, type = 'https', webAccess = false) {
 /**
  * @param org - Name of the github organization where the repository is located
  * @param repoName - Name of the github repository
- * @param apiTokenID - Jenkins credentials ID where the github api token is stored
+ * @param credentialsID - The credentials id where the github user/password is stored in Jenkins
  * @param filterByTagRef - Reference used to filter the repository tags
  * @returns a string containing the product's latest release version
  */
-def ghGetRepoTags(String org, String repoName, String apiTokenID, String filterByTagRef = "") {
+def ghGetRepoTags(String org, String repoName, String credentialsID, String filterByTagRef = "") {
     def endpoint = "repos/${org}/${repoName}/git/refs/tags"
-    def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
+    def response = ghApiRequest(endpoint, 'GET', null, credentialsID, [], '200')
 
     def tags = readJSON text: response.content
     tags = tags.findAll { tag -> tag.ref.contains(filterByTagRef) }
@@ -178,13 +176,13 @@ def ghGetRepoTags(String org, String repoName, String apiTokenID, String filterB
 /**
  * @param org - Name of the github organization where the repository is located
  * @param repoName - Name of the github repository
- * @param apiTokenID - Jenkins credentials ID where the github api token is stored
+ * @param credentialsID - The credentials id where the github user/password is stored in Jenkins
  * @param filterByTagRef - Reference used to filter the repository tags
  * @returns a string containing the product's latest release version
  */
-String ghGetLatestReleaseByTag(String org, String repoName, String apiTokenID, String filterByTagRef = "") {
+String ghGetLatestReleaseByTag(String org, String repoName, String credentialsID, String filterByTagRef = "") {
     def latestRelease = ""
-    def tags = ghGetRepoTags(org, repoName, apiTokenID, filterByTagRef)
+    def tags = ghGetRepoTags(org, repoName, credentialsID, filterByTagRef)
 
     if (tags) {
         latestRelease = tags.last().ref
@@ -196,13 +194,13 @@ String ghGetLatestReleaseByTag(String org, String repoName, String apiTokenID, S
 /**
  * @param org - Name of the github organization where the repository is located
  * @param repoName - Name of the github repository
- * @param apiTokenID - Jenkins credentials ID where the github api token is stored
+ * @param credentialsID - The credentials id where the github user/password is stored in Jenkins
  * @returns a string containing the product's latest release version
  */
-String ghGetLatestReleaseByRelease(String org, String repoName, String apiTokenID) {
+String ghGetLatestReleaseByRelease(String org, String repoName, String credentialsID) {
     def latestRelease = ""
     def endpoint = "repos/${org}/${repoName}/releases/latest"
-    def response = ghApiRequest(endpoint, 'GET', null, apiTokenID, [], '200')
+    def response = ghApiRequest(endpoint, 'GET', null, credentialsID, [], '200')
 
     def release = readJSON text: response.content
     if (release) {
