@@ -1,5 +1,7 @@
 #!/usr/bin/groovy
 
+import org.integr8ly.RegistryImage
+
 /**
  * @param config { 
  *     imageUrls = List of product image urls to check against the target registry
@@ -28,6 +30,6 @@ def call(config) {
       imageUrl
     }
   }.flatten() - null - ''
-  
+
   return preReleaseImages
 }
