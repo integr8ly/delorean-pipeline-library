@@ -21,8 +21,6 @@ def call(config) {
     excludeFilesFlag = "${excludeFilesFlag} ! -name \'${fileName}\'"
   }
 
-  println "excludeFilesFlag: ${excludeFilesFlag}"
-
   dir(targetDir) {
     productImages = registries.collect { registry ->
       registryIDs.collect { registryID ->

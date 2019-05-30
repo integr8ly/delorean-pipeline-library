@@ -26,7 +26,7 @@ def call(config) {
     try {
       registryHasImage(params) ? null : imageUrl
     } catch (Exception e) {
-      println "Failed checking ${imageUrl}, adding image to productPreReleaseImages"
+      println "Failed checking ${imageUrl}, adding image as prerelease"
       imageUrl
     }
   }.flatten() - null - ''
