@@ -29,6 +29,7 @@ def call(config) {
         sh(returnStdout: true, script: "find . -name \'*.y*ml\' ${excludeFilesFlag} -exec grep -oP \'${registry}/${registryID}.*/[^[:blank:]].*\' {} \\; | sort | uniq").replace('"', '').split('\n')
       }
     }.flatten() - null - ''
+    productImages = productImages.unique()
   }
 
   return productImages
