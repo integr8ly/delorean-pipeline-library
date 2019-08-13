@@ -16,14 +16,6 @@ def call(config) {
     def token = utils.getAccessToken([
         credentials: config.credentials
     ])
-    def isValidToken = utils.isValidAccessToken([
-        host: config.host,
-        token: token
-    ])
-
-    if (!isValidToken) {
-        error '[ERROR] Registry authentication failed'
-    }
 
     return utils.tagExists([
         host: config.host,
