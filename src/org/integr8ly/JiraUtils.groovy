@@ -1,6 +1,21 @@
 #!/usr/bin/groovy
 package org.integr8ly
 
+
+/**
+ * @param productName - The name of the product
+ * @param targetBranch - The name of the target git branch
+ * @param labels - lables to be added to default labels
+ * @returns a string of labels
+ */
+def jiraLabelsFor(String productName, String targetBranch, def labels = []) {
+    def defaultLabels = ["unplanned", productName]
+    if('master' != targetBranch) {
+        labels << targetBranch
+    }
+    return labels + defaultLabels
+}
+
 /**
  * Requires the http_request plugin to be installed (https://plugins.jenkins.io/http_request)
  * @param url - Jira rest api url
